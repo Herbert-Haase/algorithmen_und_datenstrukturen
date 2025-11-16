@@ -11,15 +11,20 @@ package ex5
    b.remove(11)
    println(b)
 
-class BinarySearch:
-   var arr : Array[Int] = new Array[Int](0)
-
+// A short overview about everything
+sealed trait search:
+   def insert(key: Int): Boolean
+   def remove(key: Int): Boolean
+   def search(key: Int): Int
    def insert(keyArr: Array[Int]): Boolean =
       for key <- keyArr do
          if !insert(key) then return false
       true
 
-   def insert(key: Int): Boolean =
+class BinarySearch extends search:
+   var arr : Array[Int] = new Array[Int](0)
+
+   override def insert(key: Int): Boolean =
       enlarge
       for i <- (arr.length - 1) to 0 by -1 do
          if i == 0 || arr(i-1) <= key then
@@ -29,7 +34,7 @@ class BinarySearch:
             arr(i) = arr(i-1)
       false
 
-   def remove(key: Int): Boolean =
+   override def remove(key: Int): Boolean =
       val indx = search(key)
       if indx == -1 then false
       else
@@ -38,7 +43,7 @@ class BinarySearch:
          shrink
          true
 
-   def search(key: Int): Int =
+   override def search(key: Int): Int =
       val out = search(key, 0, arr.length -1, isInterpol = true)
       if arr(out) == key then out else -1
 
