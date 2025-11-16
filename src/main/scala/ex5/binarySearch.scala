@@ -1,5 +1,7 @@
 package ex5
 
+import scala.annotation.tailrec
+
 @main def start(): Unit =
    val b = new BinarySearch
    println(b.toString)
@@ -47,6 +49,7 @@ class BinarySearch extends search:
       val out = search(key, 0, arr.length -1, isInterpol = true)
       if arr(out) == key then out else -1
 
+   @tailrec
    private def search(key: Int, l: Int, r: Int, isInterpol: Boolean): Int =
       if l == r then l
       else
@@ -62,6 +65,7 @@ class BinarySearch extends search:
          b(i) = arr(i)
       arr = b
 
+   // Attention! shrink throws the last indx away, so be aware of it!
    private def shrink: Unit =
       val b = new Array[Int](arr.length - 1)
       for i <- b.indices do
@@ -71,5 +75,5 @@ class BinarySearch extends search:
    override def toString: String =
       arr.mkString(", ")
 
-   private def interpolate(l: Int, r: Int) = l + (r-l) * (arr(r) - arr(l)) / (arr(r) - arr(l))
+   private def interpolate(l: Int, r: Int) = {val diff: Int = arr(r) - arr(l);  l + (r-l) * diff / diff}
    private def mean(l: Int, r: Int) = (r-l)/2 + l
