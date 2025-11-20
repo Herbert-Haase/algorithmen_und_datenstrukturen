@@ -25,3 +25,26 @@ trait Sortieren(a:Array[Int]):
 
     override def toString: String = a.mkString("[", ", ", "]")
 
+
+trait SortDivideConquer(a:Array[Int]):
+    var count: Int = 0
+
+    def countAndReset: Unit =
+        println(f"Anzahl Elementvergleiche: ${count}")
+        count = 0
+        return;
+
+    def apply(idx: Int):Int =
+        count += 1
+        a(idx)
+
+    def swap(i:Int, j:Int): Unit =
+        val t:Int = a(i)
+        a(i) = a(j)
+        a(j) = t
+
+
+    def sort(left:Int, right:Int): Unit
+
+
+    override def toString: String = a.mkString("[", ", ", "]")
