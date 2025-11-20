@@ -2,6 +2,6 @@ package ex6
 
 import scala.reflect.ClassTag
 
-class Quick(private var a:Array[Int]) extends Sortieren:
+class Quick(a:Array[Int]) extends Sortieren(a):
 
-    override def sort(): Array[Int] = {}
+    override def sort(): Array[Int] = a

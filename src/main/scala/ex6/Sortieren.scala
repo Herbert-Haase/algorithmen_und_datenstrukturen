@@ -2,7 +2,7 @@ package ex6
 
 import scala.reflect.ClassTag
 
-trait Sortieren(private var a:Array[Int]):
+trait Sortieren(a:Array[Int]):
     var count: Int = 0
 
     def countAndReset: Unit =
@@ -20,7 +20,7 @@ trait Sortieren(private var a:Array[Int]):
         a(j) = t
 
 
-    def sort(): Array[Int] = {}
+    def sort(): Array[Int]
 
 
     override def toString: String = a.mkString("[", ", ", "]")

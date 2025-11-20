@@ -2,7 +2,7 @@ package ex6
 
 import scala.reflect.ClassTag
 
-class Selection(private var a:Array[Int]) extends Sortieren:
+class Selection(a:Array[Int]) extends Sortieren(a):
 
     override def sort(): Array[Int] =
         for (i <- 0 until a.length) {
@@ -12,6 +12,6 @@ class Selection(private var a:Array[Int]) extends Sortieren:
             swap(i, min)
         }
         countAndReset
-        return a
+        a
 
 
