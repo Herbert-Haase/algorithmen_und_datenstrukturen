@@ -1,9 +1,15 @@
+compile_commands.json
+
 *.class
 *.log
 *.tasty
+.cache
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+#idea
+.idea
 
 # bloop and metals
 .bloop
@@ -17,6 +23,7 @@ project/metals.sbt
 
 # scala 3
 .tasty
+.scala-build
 
 # sbt
 project/project/
