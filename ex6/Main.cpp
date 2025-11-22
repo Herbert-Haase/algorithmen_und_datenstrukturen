@@ -145,6 +145,7 @@ public:
 int main()
 {
   // std::array<int,4> unsorted{4,3,2,1};
+  srand(time(nullptr));
   std::array<int, N> unsorted{};
   std::cout << "[";
   for (size_t i = 0; i < unsorted.size(); i++)
