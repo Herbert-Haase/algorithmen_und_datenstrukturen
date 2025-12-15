@@ -1,5 +1,7 @@
 package ex7
 
+import scala.annotation.tailrec
+
 
 case class AVLTree():
   private var head: Option[AVLNode] = None
@@ -66,9 +68,11 @@ case class AVLTree():
       else parent.rightChild = bypass
     else head = bypass
 
+  @tailrec
   private def min(n: AVLNode): AVLNode =
     if n.leftChild.isEmpty then n else min(n.leftChild.get)
 
+  @tailrec
   private def max(n: AVLNode): AVLNode =
     if n.rightChild.isEmpty then n else max(n.rightChild.get)
 
@@ -79,6 +83,19 @@ case class AVLTree():
 
   private def doIfSome_[T](element: Option[AVLNode], func: AVLNode => T, elseVal: T): T =
     if element.isEmpty then elseVal else func(element.get)
+
+  private def balance(n: AVLNode): Unit =
+    val getHeight = (node: AVLNode) => node.height
+    val leftHeight = doIfSome_(n.leftChild, getHeight, -1)
+    val rightHeight = doIfSome_(n.rightChild, getHeight, -1)
+    n.height = leftHeight.max(rightHeight) + 1
+    if leftHeight != rightHeight then
+      true
+
+  private def turnLeft(node: AVLNode): Unit =
+    if node.leftChild.nonEmpty then
+      val out = node.leftChild.get
+
 
 
 class AVLNode (val key: Int,
