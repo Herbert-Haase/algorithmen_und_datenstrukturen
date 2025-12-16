@@ -4,14 +4,18 @@ import scala.annotation.tailrec
 
 @main def test(): Unit =
   val tree = AVLTree()
-  tree.insert(Vector(10,1,3,7,19,22,11, 23))
+  tree.insert(Vector(10, 1, 3, 7, 19, 22, 11, 23, 13, 15, 27, 33))
   println(tree)
   tree.remove(10)
   println("Neu:")
   println(tree)
+  println("Pre-Order: " + tree.PreOrder(tree.head.get, _.value.toString + ", "))
+  println("In-Order: " + tree.InOrder(tree.head.get, _.value.toString + ", "))
+  println("Post-Order: " + tree.PostOrder(tree.head.get, _.value.toString + ", "))
+  println(f"Suche nach 27: ${tree.search(27).nonEmpty}")
 
 case class AVLTree():
-  private var head: Option[AVLNode] = None
+  var head: Option[AVLNode] = None
 
   def insert(value: Int): Boolean =
     if head.nonEmpty then insert(head.get, value, value) else
@@ -22,7 +26,7 @@ case class AVLTree():
 
   def remove(value: Int): Boolean = remove(head, value)
 
-  def search(value: Int): Boolean = if head.nonEmpty then search(head.get, value).nonEmpty else false
+  def search(value: Int): Option[Int] = if head.nonEmpty then search(head.get, value) else None
 
   def PreOrder(n: AVLNode, f: AVLNode => String): String =
     f(n)
@@ -44,8 +48,8 @@ case class AVLTree():
     else if key < n.key then doIfSome(n.leftChild, (el: AVLNode) => search(el, key))
     else doIfSome(n.rightChild, (el: AVLNode) => search(el, key))
 
-  def insert(n: AVLNode, key: Int, value: Int): Boolean =
-    if key == n.key then false
+  def insert(n: AVLNode, key: Int, value: Int): Boolean = {
+    val out = if key == n.key then false
     else
       if key < n.key then
         if n.leftChild.isEmpty then
@@ -54,6 +58,9 @@ case class AVLTree():
       else if n.rightChild.isEmpty then
         n.rightChild = Some(AVLNode(key, value, Option(n))); balance(n); true
       else insert(n.rightChild.get, key, value)
+    if out then balance(n)
+    out
+  }
 
 
   // Funktion für das Auswählen der zu löschenden Node
@@ -61,11 +68,13 @@ case class AVLTree():
     if n.isEmpty then false
     else
       val node = n.get
-      if key < node.key then remove(node.leftChild, key)
+      val out = if key < node.key then remove(node.leftChild, key)
       else if key > node.key then remove(node.rightChild, key)
       else
         removeThis(node)
         true
+      if out then balance(node)
+      out
 
   // lösche einen gegebenen Node
   private def removeThis(node: AVLNode): Unit =
@@ -104,7 +113,6 @@ case class AVLTree():
 
   private def doIfSome_[T](node: Option[AVLNode], func: AVLNode => T, elseVal: T) = AVLTree.doIfSome_(node, func, elseVal)
 
-  @tailrec
   private def balance(n: AVLNode): Unit =
     n.updateHeight()
     if n.balance < -1 then // n ist linkslastig
@@ -117,7 +125,6 @@ case class AVLTree():
       right.balance match
         case a if a >= 0 => rotateLeft(n) // B1
         case -1 => {rotateRight(right); rotateLeft(n)} // B2
-    if n.parent.nonEmpty then balance(n.parent.get)
 
   private def rotateRight(node: AVLNode): Unit =
     if node.leftChild.nonEmpty then
