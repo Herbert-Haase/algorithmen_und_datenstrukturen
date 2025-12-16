@@ -6,6 +6,9 @@ import scala.annotation.tailrec
   val tree = AVLTree()
   tree.insert(Vector(10,1,3,7,19,22,11))
   println(tree)
+  tree.remove(19)
+  println("Neu:")
+  println(tree)
 
 case class AVLTree():
   private var head: Option[AVLNode] = None
@@ -79,8 +82,12 @@ case class AVLTree():
          p.rightChild = node.rightChild; p
         else left)
       else rightOpt
-    changeParentLink(node, bypass)
-    balance(node)
+    if bypass.nonEmpty then
+      val bp = bypass.get
+      bp.parent = node.parent
+      if bp.leftChild.nonEmpty then bp.leftChild.get.parent = bypass
+      if bp.rightChild.nonEmpty then bp.rightChild.get.parent = bypass
+      changeParentLink(bp, bypass)
 
   @tailrec
   private def min(n: AVLNode): AVLNode =
@@ -89,8 +96,6 @@ case class AVLTree():
   @tailrec
   private def max(n: AVLNode): AVLNode =
     if n.rightChild.isEmpty then n else max(n.rightChild.get)
-
-  private def removeChild(n: AVLNode): Option[AVLNode] = None
 
   private def doIfSome[T](element: Option[AVLNode], func: AVLNode => Option[T]): Option[T] =
     if element.isEmpty then None else func(element.get)
