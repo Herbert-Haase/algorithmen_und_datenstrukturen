@@ -4,9 +4,9 @@ import scala.annotation.tailrec
 
 @main def test(): Unit =
   val tree = AVLTree()
-  tree.insert(Vector(10,1,3,7,19,22,11))
+  tree.insert(Vector(10,1,3,7,19,22,11, 23))
   println(tree)
-  tree.remove(19)
+  tree.remove(10)
   println("Neu:")
   println(tree)
 
@@ -75,19 +75,21 @@ case class AVLTree():
     val bypass: Option[AVLNode] =
       if node.leftChild.nonEmpty then
         val left = node.leftChild.get
-        Option( if node.rightChild.nonEmpty then
-         val right = node.rightChild.get
-         val p = if left.height > right.height then max(left) else min(right)
-         p.leftChild = node.leftChild
-         p.rightChild = node.rightChild; p
-        else left)
+        Option(
+          if node.rightChild.nonEmpty then
+            val right = node.rightChild.get
+            val p = if left.height > right.height then max(left) else min(right)
+            removeThis(p)
+            p.leftChild = node.leftChild
+            p.rightChild = node.rightChild; p
+          else left)
       else rightOpt
     if bypass.nonEmpty then
       val bp = bypass.get
       bp.parent = node.parent
       if bp.leftChild.nonEmpty then bp.leftChild.get.parent = bypass
       if bp.rightChild.nonEmpty then bp.rightChild.get.parent = bypass
-      changeParentLink(bp, bypass)
+    changeParentLink(node, bypass)
 
   @tailrec
   private def min(n: AVLNode): AVLNode =
