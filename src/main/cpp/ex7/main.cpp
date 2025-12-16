@@ -4,11 +4,9 @@
 #include <memory>
 #include <vector>
 
-namespace ex7
-{
+namespace ex7 {
 
-struct Node
-{
+struct Node {
   int key;
   int val;
   int height;
@@ -18,97 +16,71 @@ struct Node
   Node *pred;
 
   Node(int key, int val)
-      : key{key}, val{val}, height{0}, left{0}, right{0}, succ{0}, pred{0}
-  {
-  }
+      : key{key}, val{val}, height{0}, left{0}, right{0}, succ{0}, pred{0} {}
 };
 
-class AVLtree
-{
+class AVLtree {
 public:
   Node *root;
   AVLtree() : root{0} {}
-  ~AVLtree()
-  {
+  ~AVLtree() {
     if (root == nullptr)
       return;
     std::vector<Node *> stack{};
     stack.push_back(root);
 
-    while (!stack.empty())
-    {
+    while (!stack.empty()) {
       Node *node = stack.back();
 
-      if (node->right != nullptr)
-      {
+      if (node->right != nullptr) {
         stack.push_back(node->right);
         node->right = nullptr;
-      }
-      else if (node->left != nullptr)
-      {
+      } else if (node->left != nullptr) {
         stack.push_back(node->left);
         node->left = nullptr;
-      }
-      else
-      {
+      } else {
         delete node;
         stack.pop_back();
       }
     }
   }
-  // std::vector<Node*> stackLR{};
-  // std::vector<Node*> stackN{};
-  // if (p != nullptr)
-  // {
-  //   PostOrder(p->left);
-  //   PostOrder(p->right);
-  //   delete p;
-  // }
   AVLtree(const AVLtree &) = delete;
   AVLtree(const AVLtree &&) = delete;
   AVLtree &operator=(const AVLtree &) = delete;
   AVLtree &operator=(const AVLtree &&) = delete;
 
-  Node *getMin(Node *p) const
-  {
+  Node *getMin(Node *p) const {
     if (p == nullptr)
       return p;
-    while (p->pred != nullptr)
-    {
+    while (p->pred != nullptr) {
       p = p->pred;
     }
     return p;
   }
 
-  Node *getMax(Node *p) const
-  {
+  Node *getMax(Node *p) const {
     if (p == nullptr)
       return p;
-    while (p->succ != nullptr)
-    {
+    while (p->succ != nullptr) {
       p = p->succ;
     }
     return p;
   }
 
-  int getHeight(const Node *p) const
-  {
+  int getHeight(const Node *p) const {
     if (p == nullptr)
       return -1;
     else
       return p->height;
   }
-  int getBalance(const Node *p) const
-  {
+  int getBalance(const Node *p) const {
     if (p == nullptr)
       return 0;
     else
       return getHeight(p->right) - getHeight(p->left);
   }
-  void rotateRight(Node *&p)
-  {
-    if (p->left != 0)
-    {
+  void rotateRight(Node *&p) {
+    if (p->left != 0) {
       Node *q = p->left;
       p->left = q->right;
       q->right = p;
@@ -117,10 +89,8 @@ public:
       p = q;
     }
   }
-  void rotateLeft(Node *&p)
-  {
-    if (p->right != 0)
-    {
+  void rotateLeft(Node *&p) {
+    if (p->right != 0) {
       Node *q = p->right;
       p->right = q->left;
       q->left = p;
@@ -129,22 +99,19 @@ public:
       p = q;
     }
   }
-  void rotateLeftRight(Node *&p)
-  {
+  void rotateLeftRight(Node *&p) {
     if (p == nullptr || p->left == nullptr)
       return;
     rotateLeft(p->left);
     rotateRight(p);
   }
-  void rotateRightLeft(Node *&p)
-  {
+  void rotateRightLeft(Node *&p) {
     if (p == nullptr || p->right == nullptr)
       return;
     rotateRight(p->right);
     rotateLeft(p);
   }
-  void balance(Node *&p)
-  {
+  void balance(Node *&p) {
     if (p == nullptr)
       return;
 
@@ -154,9 +121,8 @@ public:
       if (getBalance(p->left) <= 0)
         rotateRight(p); // A1
       else
-        rotateLeftRight(p); // A2
-    }
-    else if (getBalance(p) == 2) // Baum ist linkslastig
+        rotateLeftRight(p);        // A2
+    } else if (getBalance(p) == 2) // Baum ist linkslastig
     {
       if (getBalance(p->right) >= 0)
         rotateLeft(p); // B1
@@ -164,41 +130,33 @@ public:
         rotateRightLeft(p); // B2
     }
   }
-  bool insert(int val)
-  {
-    if (root == nullptr)
-    {
+  bool insert(int val) {
+    if (root == nullptr) {
       root = new Node(val, val);
       return true;
     }
     return insert(val, val, root, root);
   }
 
-  bool insert(int key, int val, Node *&par, Node *&p)
-  {
+  bool insert(int key, int val, Node *&par, Node *&p) {
     bool result;
-    if (p == nullptr)
-    {
+    if (p == nullptr) {
       p = new Node(key, val);
       result = true;
-      if (par->key < key)
-      {
+      if (par->key < key) {
         p->pred = par;
         p->succ = par->succ;
         par->succ = p;
         if (p->succ)
           p->succ->pred = p;
-      }
-      else
-      {
+      } else {
         p->succ = par;
         p->pred = par->pred;
         par->pred = p;
         if (p->pred)
           p->pred->succ = p;
       }
-    }
-    else if (key < p->key)
+    } else if (key < p->key)
       result = insert(key, val, p, p->left);
     else if (key > p->key)
       result = insert(key, val, p, p->right);
@@ -209,26 +167,20 @@ public:
     return result;
   }
 
-  bool remove(int key, Node *&p)
-  {
+  bool remove(int key, Node *&p) {
     if (p == 0)
       return false;
-    if (key < p->key)
-    {
+    if (key < p->key) {
       bool found = remove(key, p->left);
       if (found)
         balance(p);
       return found;
-    }
-    else if (key > p->key)
-    {
+    } else if (key > p->key) {
       bool found = remove(key, p->right);
       if (found)
         balance(p);
       return found;
-    }
-    else if (p->left == 0 || p->right == 0)
-    {
+    } else if (p->left == 0 || p->right == 0) {
       Node *tmp = p;
       if (p->pred != 0)
         p->pred->succ = p->succ;
@@ -240,9 +192,7 @@ public:
         p = p->right; // by-pass nach rechts
       delete tmp;
       return true;
-    }
-    else
-    {
+    } else {
       Node *min = p->succ;
       p->val = min->val;
       p->key = min->key;
@@ -250,53 +200,43 @@ public:
     }
   }
 
-  void PreOrder(Node *&p)
-  {
-    if (p != nullptr)
-    {
+  void PreOrder(Node *&p) {
+    if (p != nullptr) {
       std::cout << p->val << ", ";
       PreOrder(p->left);
       PreOrder(p->right);
     }
   }
-  void InOrder(Node *p)
-  {
-    while (p != 0)
-    {
+  void InOrder(Node *p) {
+    while (p != 0) {
       std::cout << p->val << ", ";
       p = p->succ;
     }
   }
-  void PostOrder(Node *&p)
-  {
-    if (p != nullptr)
-    {
+  void PostOrder(Node *&p) {
+    if (p != nullptr) {
       PostOrder(p->left);
       PostOrder(p->right);
       std::cout << p->val << ", ";
     }
   }
-  bool search(int key, int value, Node *p)
-  {
+  bool search(int key, int *value, Node *p) {
     if (p == 0)
       return false;
     else if (key < p->key)
       return search(key, value, p->left);
     else if (key > p->key)
       return search(key, value, p->right);
-    else
-    {
-      value = p->val;
+    else {
+      *value = p->val;
       return true;
     }
   }
-  void printTreeDebug()
-  {
+  void printTreeDebug() {
     Node *queue[100];
     int front = 0, back = 0;
 
-    if (root == nullptr)
-    {
+    if (root == nullptr) {
       std::cout << "(empty)" << std::endl;
       return;
     }
@@ -304,8 +244,7 @@ public:
     queue[back++] = root;
 
     std::cout << "Level-order: ";
-    while (front < back)
-    {
+    while (front < back) {
       Node *current = queue[front++];
       std::cout << current->val << " ";
 
@@ -346,8 +285,7 @@ public:
 
 using namespace ex7;
 
-int main(void)
-{
+int main(void) {
   AVLtree avl = AVLtree{};
   avl.insert(4);
   avl.insert(1);
@@ -356,16 +294,24 @@ int main(void)
   avl.insert(2);
   avl.insert(6);
   avl.remove(3, avl.root);
+  avl.insert(5);
+  avl.insert(2);
+  avl.insert(6);
+  std::cout << "PreOrder" << '\n';
   avl.PreOrder(avl.root);
   std::cout << '\n';
-  if (avl.search(6, 6, avl.root))
-    std::cout << "6 was found" << '\n';
-  if (!avl.search(3, 3, avl.root))
-    std::cout << "3 was not found" << '\n';
-  std::cout << '\n';
+  std::cout << "InOrder" << '\n';
   avl.InOrder(avl.getMin(avl.root));
   std::cout << '\n';
+  std::cout << "PostOrder" << '\n';
   avl.PostOrder(avl.root);
+  std::cout << '\n';
+  int six = 6;
+  int three = 3;
+  if (avl.search(6, &six, avl.root))
+    std::cout << "6 was found" << '\n';
+  if (!avl.search(3, &three, avl.root))
+    std::cout << "3 was not found" << '\n';
   std::cout << '\n';
   avl.printTreeDebug();
   return 0;
