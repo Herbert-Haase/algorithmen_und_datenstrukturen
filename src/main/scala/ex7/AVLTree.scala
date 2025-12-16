@@ -2,9 +2,23 @@ package ex7
 
 import scala.annotation.tailrec
 
+@main def test: Unit =
+  val tree = AVLTree()
+  tree.insert(Vector(10,1,3,7,19,22,11))
 
 case class AVLTree():
   private var head: Option[AVLNode] = None
+
+  def insert(value: Int): Boolean =
+    if head.nonEmpty then insert(head.get, value, value) else
+    head = Option(AVLNode(value, value, None)); true
+
+  def insert(arrVals: Vector[Int]): Boolean =
+    !arrVals.forall((v: Int) => insert(v))
+
+  def remove(value: Int): Boolean = remove(head, value)
+
+  def search(value: Int): Boolean = if head.nonEmpty then search(head.get, value).nonEmpty else false
 
   def PreOrder(n: AVLNode, f: AVLNode => String): String =
     f(n)
@@ -62,11 +76,7 @@ case class AVLTree():
          p.rightChild = node.rightChild; p
         else left)
       else rightOpt
-    if node.parent.nonEmpty then
-      val parent = node.parent.get
-      if node.key < parent.key then parent.leftChild = bypass
-      else parent.rightChild = bypass
-    else head = bypass
+    changeParentLink(node, bypass)
 
   @tailrec
   private def min(n: AVLNode): AVLNode =
@@ -81,29 +91,61 @@ case class AVLTree():
   private def doIfSome[T](element: Option[AVLNode], func: AVLNode => Option[T]): Option[T] =
     if element.isEmpty then None else func(element.get)
 
-  private def doIfSome_[T](element: Option[AVLNode], func: AVLNode => T, elseVal: T): T =
-    if element.isEmpty then elseVal else func(element.get)
+  private def doIfSome_[T](node: Option[AVLNode], func: AVLNode => T, elseVal: T) = AVLTree.doIfSome_(node, func, elseVal)
 
   private def balance(n: AVLNode): Unit =
-    val getHeight = (node: AVLNode) => node.height
-    val leftHeight = doIfSome_(n.leftChild, getHeight, -1)
-    val rightHeight = doIfSome_(n.rightChild, getHeight, -1)
-    n.height = leftHeight.max(rightHeight) + 1
-    if leftHeight != rightHeight then
-      true
+    n.updateHeight()
+    if n.balance < -1 then // n ist linkslastig
+      val left = n.leftChild.get // linkes Kind muss wegen linkslastig existieren
+      left.balance match
+        case 0 | -1 => rotateRight(n) // A1
+        case 1 => {rotateLeft(left); rotateRight(n)} // A2
+    else if n.balance > 1 then
+      val right = n.rightChild.get
+      right.balance match
+        case 0 | 1 => rotateLeft(n) // B1
+        case -1 => {rotateRight(right); rotateLeft(n)} // B2
+    if n.parent.nonEmpty then balance(n.parent.get)
 
-  private def turnLeft(node: AVLNode): Unit =
+  private def rotateRight(node: AVLNode): Unit =
     if node.leftChild.nonEmpty then
       val out = node.leftChild.get
+      out.leftChild = Option(node)
+      out.leftChild.get.updateHeight()
+      out.updateHeight()
+      changeParentLink(node, Option(out))
+
+  private def rotateLeft(node: AVLNode): Unit =
+    if node.rightChild.nonEmpty then
+      val out = node.rightChild.get
+      out.rightChild = Option(node)
+      out.rightChild.get.updateHeight()
+      out.updateHeight()
+      changeParentLink(node, Option(out))
 
 
+  private def changeParentLink(node: AVLNode, value: Option[AVLNode]): Unit =
+    if node.parent.nonEmpty then
+      val parent: AVLNode = node.parent.get
+      if node.key < parent.key then parent.leftChild = value else parent.rightChild = value
+    else head = value
 
-class AVLNode (val key: Int,
-               val value: Int,
-               var parent: Option[AVLNode],
-               var leftChild: Option[AVLNode] = None,
+object AVLTree:
+  def doIfSome_[T](element: Option[AVLNode], func: AVLNode => T, elseVal: T): T =
+    if element.isEmpty then elseVal else func(element.get)
+
+class AVLNode(val key: Int,
+              val value: Int,
+              var parent: Option[AVLNode],
+              var leftChild: Option[AVLNode] = None,
                var rightChild: Option[AVLNode] = None,
-               var height: Int = 0)
+               var height: Int = 0):
+  def balance: Int =
+    val getHeight = (node: AVLNode) => node.height
+    AVLTree.doIfSome_(this.rightChild, getHeight, -1) - AVLTree.doIfSome_(this.leftChild, getHeight, -1)
 
-@main def tests(): Unit =
-  println("hi")
+  def updateHeight(): Unit =
+    val getHeight = (node: AVLNode) => node.height
+    val leftHeight = AVLTree.doIfSome_(leftChild, getHeight, -1)
+    val rightHeight = AVLTree.doIfSome_(rightChild, getHeight, -1)
+    height = leftHeight.max(rightHeight) + 1
