@@ -1,8 +1,5 @@
 #include "Sortieren.hpp"
 #include <algorithm>
-#include <iostream>
-#include <memory>
-#include <span>
 
 namespace ex6
 {
@@ -12,16 +9,17 @@ Sortieren::Sortieren(std::span<int> arr)
 {
   std::copy(arr.begin(), arr.end(), a.get());
 }
+
 void Sortieren::countAndReset()
 {
-  std::cout << "Anzahl Elementvergleiche: " << count / 2 << '\n';
+  std::cout << "Anzahl Elementvergleiche: " << count << '\n';
   count = 0;
 }
 
-int Sortieren::get(unsigned idx)
+bool Sortieren::less(int lhs, int rhs)
 {
   count++;
-  return a[idx];
+  return lhs < rhs;
 }
 
 void Sortieren::swap(int i, int j)

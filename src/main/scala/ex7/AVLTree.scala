@@ -4,15 +4,15 @@ import scala.annotation.tailrec
 
 @main def test(): Unit =
   val tree = AVLTree()
-  tree.insert(Vector(10, 1, 3, 7, 19, 22, 11, 23, 13, 15, 27, 33))
+  tree.insert(Vector(10,5,20,3,9,15,25,4,13,18,26,17,19))
   println(tree)
-  tree.remove(10)
-  println("Neu:")
+  tree.remove(5)
   println(tree)
   println("Pre-Order: " + tree.PreOrder(tree.head.get, _.value.toString + ", "))
   println("In-Order: " + tree.InOrder(tree.head.get, _.value.toString + ", "))
   println("Post-Order: " + tree.PostOrder(tree.head.get, _.value.toString + ", "))
   println(f"Suche nach 27: ${tree.search(27).nonEmpty}")
+
 
 case class AVLTree():
   var head: Option[AVLNode] = None
@@ -68,11 +68,11 @@ case class AVLTree():
     if n.isEmpty then false
     else
       val node = n.get
-      val out = if key < node.key then remove(node.leftChild, key)
+      val out = (if key < node.key then remove(node.leftChild, key)
       else if key > node.key then remove(node.rightChild, key)
       else
         removeThis(node)
-        true
+        true)
       if out then balance(node)
       out
 
