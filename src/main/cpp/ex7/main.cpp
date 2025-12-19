@@ -169,7 +169,8 @@ public:
 
   bool remove(int key, Node *&p) {
     if (p == 0)
-      return false;
+    {balance(p);
+      return false;}
     if (key < p->key) {
       bool found = remove(key, p->left);
       if (found)
@@ -191,11 +192,13 @@ public:
       else
         p = p->right; // by-pass nach rechts
       delete tmp;
+      balance(p);
       return true;
     } else {
       Node *min = p->succ;
       p->val = min->val;
       p->key = min->key;
+      balance(p);
       return remove(min->key, p->right);
     }
   }
@@ -287,16 +290,33 @@ using namespace ex7;
 
 int main(void) {
   AVLtree avl = AVLtree{};
-  avl.insert(4);
-  avl.insert(1);
+  // avl.insert(4);
+  // avl.insert(1);
+  // avl.insert(3);
+  // avl.insert(5);
+  // avl.insert(2);
+  // avl.insert(6);
+  // avl.remove(3, avl.root);
+  // avl.insert(3);
+  // avl.insert(2);
+  // avl.insert(6);
+  avl.insert(10);
+  avl.insert(5);
+  avl.insert(20);
   avl.insert(3);
-  avl.insert(5);
-  avl.insert(2);
-  avl.insert(6);
-  avl.remove(3, avl.root);
-  avl.insert(5);
-  avl.insert(2);
-  avl.insert(6);
+  avl.insert(9);
+  avl.insert(15);
+  avl.insert(25);
+  avl.insert(4);
+  avl.insert(13);
+  avl.insert(18);
+  avl.insert(26);
+  avl.insert(17);
+  avl.insert(19);
+  //remove
+  avl.remove(5, avl.root);
+
+
   std::cout << "PreOrder" << '\n';
   avl.PreOrder(avl.root);
   std::cout << '\n';
