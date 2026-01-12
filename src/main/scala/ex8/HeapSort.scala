@@ -1,65 +1,55 @@
 package ex8
 
 import scala.annotation.tailrec
+import ex6.Sorter
 
 @main def start =
   var arr = HeapSort.mkNodeArr(Array(10, 11, 16, 13, 2, 14, 15))
   var heap = HeapSort.heapSort(arr)
-  println(heap.mkString(", "))
-  println(HeapSort.getParentID(2))
+  println(heap)
+  heap.countAndReset()
 
 object HeapSort:
-  def mkNodeArr(ints: Array[Int]): Array[Node] = ints.map(i => Node(i))
+  def mkNodeArr(ints: Array[Int]): Heap = Heap(ints.map(i => Node(i)))
 
-  def heapSort(a: Array[Node]): Array[Node] = {
+  def heapSort(a: Heap): Heap =
     build_heap(a, a.length)
-    for indx <- a.indices do {
-      println(a.mkString( ", "))
+    for indx <- 0 until a.length do
       val backwards = a.length - indx - 1
-      swap(a,0,backwards)
+      a.swap(0,backwards)
       heapifyDown(a,0,backwards)
-
-    }
     a
-  }
 
-  def build_heap(a: Array[Node], heapSize: Int ): Array[Node] =
+  def build_heap(a: Heap, heapSize: Int ): Heap =
     for i <- 1 until heapSize do
       heapifyUp(a, i, i)
     a
 
-  private def heapifyDown(a: Array[Node], node: Int, heapSize: Int): Array[Node] =
+  private def heapifyDown(a: Heap, node: Int, heapSize: Int): Heap =
     val leftID = node * 2 + 1
     if leftID < heapSize then
       val rightID = leftID + 1
       if rightID < heapSize then
-        if a(leftID).key > a(rightID).key && a(leftID).key > a(node).key then
-          swap(a, node, leftID)
+        if a > (leftID, rightID) && a > (leftID, node) then
+          a.swap(node, leftID)
           heapifyDown(a, leftID, heapSize)
-        else if a(rightID).key > a(node).key then
-          swap(a, node, rightID)
+        else if a > (rightID, node) then
+          a.swap(node, rightID)
           heapifyDown(a, rightID, heapSize)
-      else if a(leftID).key > a(node).key then
-        swap(a, node, leftID)
+      else if a > (leftID, node) then
+        a.swap(node, leftID)
         heapifyDown(a, leftID, heapSize)
     a
 
-  private def heapifyUp(a: Array[Node], node: Int, newNode: Int): Array[Node] =
+  private def heapifyUp(a: Heap, node: Int, newNode: Int): Heap =
     val parentID = getParentID(node)
     parentID match
       case Some(parent) =>
-        if a(parent).key < a(newNode).key then
+        if a < (parent, newNode) then
           heapifyUp(a, parent, newNode)
       case None =>
-    swap(a, newNode, node)
+    a.swap(newNode, node)
 
-
-  private def swap(a: Array[Node], id: Int, id2: Int): Array[Node] =
-    if !(id == id2 || id < 0 || id2 < 0) then
-      val mem = a(id2)
-      a(id2) = a(id)
-      a(id) = mem
-    a
 
   def getParentID(id: Int): Option[Int] =
     if id <= 0 then None
@@ -67,4 +57,31 @@ object HeapSort:
 
 case class Node(key: Int):
   override def toString: String = f"$key"
+
+case class Heap(private var arr: Array[Node]):
+  var count = 0
+
+  def swap(id: Int, id2: Int): Heap =
+    if !(id == id2 || id < 0 || id2 < 0) then
+      val mem = arr(id2)
+      arr(id2) = arr(id)
+      arr(id) = mem
+    this
+
+  def countAndReset(): Unit =
+    println(f"Anzahl Vergleiche ${count}")
+    count = 0
+
+  def <(indx: Int, indx2: Int): Boolean =
+    count += 1
+    arr(indx).key < arr(indx2).key
+
+  def >(indx: Int, indx2: Int): Boolean =
+    count += 1
+    arr(indx).key > arr(indx2).key
+
+  override def toString: String =
+    arr.mkString(", ")
+
+  def length = arr.length
 

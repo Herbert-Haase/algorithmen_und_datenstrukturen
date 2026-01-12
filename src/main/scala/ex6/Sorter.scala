@@ -1,4 +1,5 @@
-trait Sortieren(arr: Array[Int]) {
+package ex6
+trait Sorter(arr: Array[Int]):
 
   protected val a: Array[Int] = arr.clone()
   protected val size: Int = a.length
@@ -6,26 +7,21 @@ trait Sortieren(arr: Array[Int]) {
 
   def sort(): Unit
 
-  def countAndReset(): Unit = {
-    println(s"Anzahl Elementvergleiche: $count")
+  def countAndReset(): Unit =
+    println(s"Anzahl Elementvergleiche: ${count/2}")
     count = 0
-  }
 
-  def get(idx: Int): Int = {
+  def get(idx: Int): Int =
     count += 1
     a(idx)
-  }
 
-  def swap(i: Int, j: Int): Unit = {
+  def swap(i: Int, j: Int): Unit =
     val t = a(i)
     a(i) = a(j)
     a(j) = t
-  }
 
   def rawGet(index: Int): Int = a(index)
   def rawSet(index: Int, value: Int): Unit = a(index) = value
 
-  override def toString: String = {
+  override def toString: String =
     a.mkString("[", ", ", "]")
-  }
-}

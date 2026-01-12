@@ -1,87 +1,65 @@
+package ex6
 import scala.util.Random
 
-class Selection(arr: Array[Int]) extends Sortieren(arr) {
-  override def sort(): Unit = {
-    for (i <- 0 until size - 1) {
+class Selection(arr: Array[Int]) extends Sorter(arr):
+  override def sort(): Unit =
+    for i <- 0 until size - 1 do
       var min = i
-      for (j <- i + 1 until size) {
-        if (get(j) < get(min)) {
+      for j <- i + 1 until size do
+        if get(j) < get(min) then
           min = j
-        }
-      }
       swap(i, min)
-    }
-  }
 
-  override def countAndReset(): Unit = {
+  override def countAndReset(): Unit =
     println(s"Anzahl Elementvergleiche: ${count / 2}")
     count = 0
-  }
-}
 
-class Insertion(arr: Array[Int]) extends Sortieren(arr) {
-  override def sort(): Unit = {
-    for (i <- 1 until size) {
+class Insertion(arr: Array[Int]) extends Sorter(arr):
+  override def sort(): Unit =
+    for i <- 1 until size do
       val x = a(i)
       var j = i - 1
 
       var continue = true
-      while (j >= 0 && continue) {
-        if (x < get(j)) {
+      while j >= 0 && continue do
+        if x < get(j) then
           a(j + 1) = a(j)
           j -= 1
-        } else {
+        else
           continue = false
-        }
-      }
       a(j + 1) = x
-    }
-  }
-  
-  override def countAndReset(): Unit = {
-    println(s"Anzahl Elementvergleiche: $count")
-    count = 0
-  }
-}
 
-class Quick(arr: Array[Int]) extends Sortieren(arr) {
-  override def sort(): Unit = {
-    if (size > 0) {
+class Quick(arr: Array[Int]) extends Sorter(arr):
+  override def sort(): Unit =
+    if size > 0 then
       impSort(0, size - 1)
-    }
-  }
 
-  private def impSort(left: Int, right: Int): Unit = {
-    if (right <= left) return
+  private def impSort(left: Int, right: Int): Unit =
+    if right <= left then return
     val i = partition(left, right)
     impSort(left, i - 1)
     impSort(i + 1, right)
-  }
 
-  private def partition(left: Int, right: Int): Int = {
+  private def partition(left: Int, right: Int): Int =
     var i = left - 1
     var j = right
     val pivot = a(right)
 
-    while (true) {
+    while true do
       i += 1
-      while (get(i) < pivot) {
+      while get(i) < pivot do
         i += 1
-      }
 
       j -= 1
       var continueInner = true
-      while (continueInner) {
-         if (get(j) > pivot) {
-           if (j == left) {
+      while continueInner do
+         if get(j) > pivot then
+           if j == left then
              continueInner = false
-           } else {
+           else
              j -= 1
-           }
-         } else {
+         else
            continueInner = false
-         }
-      }
 
       if (i >= j) {
         swap(i, right)
@@ -89,75 +67,51 @@ class Quick(arr: Array[Int]) extends Sortieren(arr) {
       }
       
       swap(i, j)
-    }
-    i 
-  }
+    i
 
-  override def countAndReset(): Unit = {
-    println(s"Anzahl Elementvergleiche: $count")
-    count = 0
-  }
-}
-
-class Merge(arr: Array[Int]) extends Sortieren(arr) {
-  override def sort(): Unit = {
-    if (size > 0) {
+class Merge(arr: Array[Int]) extends Sorter(arr):
+  override def sort(): Unit =
+    if size > 0 then
       impSort(0, size - 1)
-    }
-  }
 
-  private def impSort(left: Int, right: Int): Unit = {
+  private def impSort(left: Int, right: Int): Unit =
     if (right <= left) return
     val middle = (left + right) / 2
     impSort(left, middle)
     impSort(middle + 1, right)
     merge(left, middle, right)
-  }
 
-  private def merge(li: Int, mi: Int, re: Int): Unit = {
+  private def merge(li: Int, mi: Int, re: Int): Unit =
     val aux = new Array[Int](re + 1)
     
     var i = mi + 1
-    while (i > li) {
+    while i > li do
       aux(i - 1) = a(i - 1)
       i -= 1
-    }
 
     var j = mi
-    while (j < re) {
+    while j < re do
       aux(re + mi - j) = a(j + 1)
       j += 1
-    }
 
     var ptrI = li
     var ptrJ = re 
     
-    for (k <- li to re) {
-      if (getE(aux, ptrJ) < getE(aux, ptrI)) {
+    for k <- li to re do
+      if getE(aux, ptrJ) < getE(aux, ptrI) then
         a(k) = aux(ptrJ)
         ptrJ -= 1
-      } else {
+      else
         a(k) = aux(ptrI)
         ptrI += 1
-      }
-    }
-  }
 
-  private def getE(arr: Array[Int], idx: Int): Int = {
+  private def getE(arr: Array[Int], idx: Int): Int =
     count += 1
     arr(idx)
-  }
 
-  override def countAndReset(): Unit = {
-    println(s"Anzahl Elementvergleiche: ${count/2}")
-    count = 0
-  }
-}
+val N = 1000
 
-object Main {
-  val N = 1000
-
-  def main(args: Array[String]): Unit = {
+@main def main(): Unit =
     val unsorted = new Array[Int](N)
     // val unsorted: Array[Int] = Array(9,8,7,6,5,4,3,2,1,0)
     
@@ -192,5 +146,3 @@ object Main {
     merge.sort()
     print("Merge: \n")
     merge.countAndReset() // 34
-  }
-}
