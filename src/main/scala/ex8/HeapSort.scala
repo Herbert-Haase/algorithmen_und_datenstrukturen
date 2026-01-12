@@ -4,13 +4,13 @@ import scala.annotation.tailrec
 import ex6.Sorter
 
 @main def start =
-  var arr = HeapSort.mkNodeArr(Array(10, 11, 16, 13, 2, 14, 15))
+  var arr = HeapSort.mkHeap(Array(10, 11, 16, 13, 2, 14, 15))
   var heap = HeapSort.heapSort(arr)
   println(heap)
   heap.countAndReset()
 
 object HeapSort:
-  def mkNodeArr(ints: Array[Int]): Heap = Heap(ints.map(i => Node(i)))
+  def mkHeap(ints: Array[Int]): Heap = Heap(ints.map(i => Node(i)))
 
   def heapSort(a: Heap): Heap =
     build_heap(a, a.length)
