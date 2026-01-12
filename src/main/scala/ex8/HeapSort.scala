@@ -4,27 +4,52 @@ import scala.annotation.tailrec
 
 @main def start =
   var arr = HeapSort.mkNodeArr(Array(10, 11, 16, 13, 2, 14, 15))
-  var heap = HeapSort.build_heap(arr, arr.length)
+  var heap = HeapSort.heapSort(arr)
   println(heap.mkString(", "))
   println(HeapSort.getParentID(2))
 
 object HeapSort:
   def mkNodeArr(ints: Array[Int]): Array[Node] = ints.map(i => Node(i))
 
-  def heapSort(a: Array[Node]): Array[Node] =
+  def heapSort(a: Array[Node]): Array[Node] = {
     build_heap(a, a.length)
+    for indx <- a.indices do {
+      println(a.mkString( ", "))
+      val backwards = a.length - indx - 1
+      swap(a,0,backwards)
+      heapifyDown(a,0,backwards)
+
+    }
+    a
+  }
 
   def build_heap(a: Array[Node], heapSize: Int ): Array[Node] =
     for i <- 1 until heapSize do
-      heapify(a, i, i)
+      heapifyUp(a, i, i)
     a
 
-  private def heapify(a: Array[Node], node: Int, newNode: Int): Array[Node] =
+  private def heapifyDown(a: Array[Node], node: Int, heapSize: Int): Array[Node] =
+    val leftID = node * 2 + 1
+    if leftID < heapSize then
+      val rightID = leftID + 1
+      if rightID < heapSize then
+        if a(leftID).key > a(rightID).key && a(leftID).key > a(node).key then
+          swap(a, node, leftID)
+          heapifyDown(a, leftID, heapSize)
+        else if a(rightID).key > a(node).key then
+          swap(a, node, rightID)
+          heapifyDown(a, rightID, heapSize)
+      else if a(leftID).key > a(node).key then
+        swap(a, node, leftID)
+        heapifyDown(a, leftID, heapSize)
+    a
+
+  private def heapifyUp(a: Array[Node], node: Int, newNode: Int): Array[Node] =
     val parentID = getParentID(node)
     parentID match
       case Some(parent) =>
         if a(parent).key < a(newNode).key then
-          heapify(a, parent, newNode)
+          heapifyUp(a, parent, newNode)
       case None =>
     swap(a, newNode, node)
 

@@ -1,4 +1,4 @@
-abstract class Sortieren(arr: Array[Int]) {
+trait Sortieren(arr: Array[Int]) {
 
   protected val a: Array[Int] = arr.clone()
   protected val size: Int = a.length
