@@ -8,14 +8,10 @@ import scala.util.Random
   val unsorted = new Array[Int](N)
   // val unsorted: Array[Int] = Array(9,8,7,6,5,4,3,2,1,0)
 
-  print("[")
-  for (i <- 0 until N) {
-    unsorted(i) = Random.nextInt()
-    print(unsorted(i))
-    if (i < N - 1) print(", ")
-  }
-  println("]\n")
-
+  for (i <- unsorted.indices)
+    unsorted(i) = Random.nextInt
+  println(unsorted.mkString(", "))
+  
   // Selection
   val selection = new Selection(unsorted)
   selection.sort()
