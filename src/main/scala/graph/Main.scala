@@ -20,14 +20,27 @@ import graph.shortestPath.Dijkstra as Dijk
   addNode(g, 0)(1)
   println(Topo.isSortable(g.toVector))
   println(Topo.sortGraph(g.toVector).get.mkString(", "))
+
   val d: Array[DirectedWeightedNode] = Array.ofDim(9)
+  addNode(d, 0)((1, 1), (3, 2), (2, 6), (4, 2))
+  addNode(d, 1)((0, 1), (2, 4), (5, 5))
+  addNode(d, 2)((3, 3), (0, 6), (1, 4), (7, 8))
+  addNode(d, 3)((2, 3), (0, 2))
+  addNode(d, 4)((6, 1), (5, 6), (0, 2))
+  addNode(d, 5)((1, 5), (4, 6), (8, 7))
+  addNode(d, 6)((4, 1), (7, 1))
+  addNode(d, 7)((6, 1), (2, 8), (8, 1))
+  addNode(d, 8)((5, 7), (7, 1))
+  val (distance, lastNode) = Dijk.shortestPath(d.toVector, 0)
+  println(f"Distances: $distance")
+  println(f"last Node: $lastNode")
 
 def addNode(arr: Array[GraphNode], key: Int)(neighbours: Int*) =
   arr(key) = GraphNode(key, neighbours.toList)
   arr
 
-def addNode(arr: Array[DirectedWeightedNode], key: Int)(neighbours: WeightEdge*) =
-  arr(key) = DirectedWeightedNode(key, neighbours.toList)
+def addNode(arr: Array[DirectedWeightedNode], key: Int)(neighbours: (Int, Int)*) =
+  arr(key) = DirectedWeightedNode(key, neighbours.map(a => WeightEdge(a._1, a._2)).toList)
   arr
 
 case class GraphNode(key: Int, neighbours: List[Int] = List()):
