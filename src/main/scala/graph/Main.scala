@@ -13,7 +13,7 @@ import graph.shortestPath.Dijkstra as Dijk
   println(f"Distances: $distance")
   println(f"last Node: $lastNode")
 
-case class GraphNode(key: Int, neighbours: List[Int] = List()):
+case class DirectedNode(key: Int, neighbours: List[Int] = List()):
   override def toString: String = key.toString
 
 case class DirectedWeightedNode(key: Int, neighbours: List[WeightEdge]):
@@ -21,8 +21,8 @@ case class DirectedWeightedNode(key: Int, neighbours: List[WeightEdge]):
 
 case class WeightEdge(target: Int, cost: Int)
 
-def exampleTopo: Array[GraphNode] =
-  val g: Array[GraphNode] = Array.ofDim(13)
+def exampleTopo: Array[DirectedNode] =
+  val g: Array[DirectedNode] = Array.ofDim(13)
   addNode(g, 11)()
   addNode(g, 10)(11)
   addNode(g, 9)(11)
@@ -51,8 +51,8 @@ def exampleDijkstra =
   addNode(d, 8)((5, 7), (7, 1))
   d
 
-def addNode(arr: Array[GraphNode], key: Int)(neighbours: Int*) =
-  arr(key) = GraphNode(key, neighbours.toList)
+def addNode(arr: Array[DirectedNode], key: Int)(neighbours: Int*) =
+  arr(key) = DirectedNode(key, neighbours.toList)
   arr
 
 def addNode(arr: Array[DirectedWeightedNode], key: Int)(neighbours: (Int, Int)*) =
