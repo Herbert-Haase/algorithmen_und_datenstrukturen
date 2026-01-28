@@ -2,8 +2,8 @@ package hash
 
 import scala.reflect.ClassTag
 
-class HashTable[T: ClassTag](val hashFunc: T => Int) extends HTable[T]:
-  private val arr: Vector[LinkedList[T]] = Vector.fill(10)(LinkedList[T]())
+class HashTable[T: ClassTag](val hashFunc: T => Int, length: Int) extends HTable[T]:
+  private val arr: Vector[LinkedList[T]] = Vector.fill(length)(LinkedList[T]())
 
   override def += (value: T): Unit =
     val hash = hashFunc(value) % arr.length
@@ -17,17 +17,21 @@ class HashTable[T: ClassTag](val hashFunc: T => Int) extends HTable[T]:
     val hash = hashFunc(value) % arr.length
     arr(hash) -= value
 
-class Node[T: ClassTag](val value: T, var next: Option[Node[T]] = None)
+  override def toString: String =
+    arr.mkString(", ")
+
+class Node[T: ClassTag](val value: T, var next: Option[Node[T]] = None):
+  override def toString: String = f"{$value, ${next.toString}}"
 
 class LinkedList[T: ClassTag](var head: Option[Node[T]] = None):
   def += (value: Node[T]): Unit =
     if head == None then
       head = Some(value)
     else
-      var node = head
-      while node.nonEmpty do
-        node = node.get.next
-      node = Some(value)
+      var node = head.get
+      while node.next.nonEmpty do
+        node = node.next.get
+      node.next = Some(value)
 
   def get (key: Int, hashFunc: T => Int): Option[T] =
     var node = head
@@ -48,3 +52,5 @@ class LinkedList[T: ClassTag](var head: Option[Node[T]] = None):
       prev = node
       node = node.get.next
     false
+
+  override def toString: String = head.toString

@@ -1,9 +1,10 @@
 package hash
 
+import scala.math.abs
 import scala.reflect.ClassTag
 
-class DoubleHashingTable[T: ClassTag](val hashFunc: T => Int) extends HTable:
-  private val arr: Array[TableElement] = Array.fill(20)(TableElement(None, false))
+class DoubleHashingTable[T: ClassTag](val hashFunc: T => Int, length: Int) extends HTable:
+  private val arr: Array[TableElement] = Array.fill(length)(TableElement(None, false))
 
   override def +=(value: T): Unit =
     for i <- 0 until arr.length / 2 do
@@ -11,10 +12,11 @@ class DoubleHashingTable[T: ClassTag](val hashFunc: T => Int) extends HTable:
       if arr(hash).value.isEmpty then
         arr(hash) = TableElement(Some(value), false)
         return
+      if hashFunc(arr(hash).value.get) == hashFunc(value) then return
       arr(hash).hasDouble = true
     throw OutOfMemoryError("Not enough memory for HashTable")
 
-  private def probe(key: Int, n: Int) = (key + n) % (arr.length - 2 * n)
+  private def probe(key: Int, n: Int) = abs((key + n) % (arr.length - 2 * n))
 
   override def search(value: Int): Option[T] =
     for i <- 0 until arr.length / 2 do
@@ -32,7 +34,7 @@ class DoubleHashingTable[T: ClassTag](val hashFunc: T => Int) extends HTable:
       val hash = arr(probe(hashFunc(value), i))
       if hash.value.isEmpty then
         if !hash.hasDouble then return false
-      if hashFunc(hash.value.get) == value then
+      if hashFunc(hash.value.get) == hashFunc(value) then
         hash.value = None
         //if lastHash.nonEmpty && !hash.hasDouble then lastHash.get.hasDouble = false
         return true
