@@ -2,6 +2,7 @@ package graph
 
 import graph.topologicSort.TopologicSort as Topo
 import graph.shortestPath.Dijkstra as Dijk
+import graph.shortestPath.MooreFord as Moore
 
 @main def main(): Unit =
   val g = exampleTopo
@@ -12,6 +13,11 @@ import graph.shortestPath.Dijkstra as Dijk
   val (distance, lastNode) = Dijk.shortestPath(d.toVector, 0)
   println(f"Distances: $distance")
   println(f"last Node: $lastNode")
+
+  val m = exampleMoore
+  val (distanceM, lastNodeM) = Moore.shortestPath(m.toVector, 0)
+  println(f"Moore - Distances: $distanceM")
+  println(f"Moore - last Node: $lastNodeM")
 
 case class DirectedNode(key: Int, neighbours: List[Int] = List()):
   override def toString: String = key.toString
@@ -49,6 +55,19 @@ def exampleDijkstra =
   addNode(d, 6)((4, 1), (7, 1))
   addNode(d, 7)((6, 1), (2, 8), (8, 1))
   addNode(d, 8)((5, 7), (7, 1))
+  d
+
+def exampleMoore =
+  val d: Array[DirectedWeightedNode] = Array.ofDim(9)
+  addNode(d, 0)((1, 1), (2, 4), (3, 1))
+  addNode(d, 1)((7, 1))
+  addNode(d, 2)((4, 1))
+  addNode(d, 3)((5, 1))
+  addNode(d, 4)((7, -10))
+  addNode(d, 5)((6, 1))
+  addNode(d, 6)((7, -20))
+  addNode(d, 7)((8, 1))
+  addNode(d, 8)()
   d
 
 def addNode(arr: Array[DirectedNode], key: Int)(neighbours: Int*) =

@@ -3,8 +3,7 @@ package graph.shortestPath
 import graph.DirectedWeightedNode as Node
 import scala.collection.mutable
 
-object Dijkstra:
-
+object MooreFord:
   def shortestPath(graph: Vector[Node], start: Int): (Vector[Int], Vector[Int]) =
     // start
     val shortest: Array[Int] = Array.fill(graph.length)(Int.MaxValue)
@@ -16,14 +15,13 @@ object Dijkstra:
       shortest(neighbour.target) = neighbour.cost
 
     while candidates.nonEmpty do
-      val nextC = candidates.minBy(f => shortest(f.key))
-      candidates -= nextC
+      val nextC = candidates.dequeue()
       for neighbour <- nextC.neighbours do
         val wayCost = shortest(nextC.key) + neighbour.cost
-        if shortest(neighbour.target) == Int.MaxValue then 
-          candidates += graph(neighbour.target)
         if wayCost < shortest(neighbour.target) then
           shortest(neighbour.target) = wayCost
           path(neighbour.target) = nextC.key
-          
+          if !candidates.exists(dwn => dwn.key == neighbour.target) then
+            candidates += graph(neighbour.target)
+
     (shortest.toVector, path.toVector)
